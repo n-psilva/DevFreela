@@ -1,13 +1,20 @@
 ﻿using DevFreela.Core.Entities;
-using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevFreela.Infrastructure.Persistence
 {
     /*
      * será devidamente implementado no módulo do EF Core
      */
-    public class DevFreelaDbContext
+    public class DevFreelaDbContext : DbContext
     {
+        public DevFreelaDbContext(DbContextOptions<DevFreelaDbContext> options) : base(options)
+        {
+
+        }
+
+        #region DBCONTEXT INMEMORY  
+        /*
         public DevFreelaDbContext()
         {
             Projects= new List<Project>
@@ -30,10 +37,13 @@ namespace DevFreela.Infrastructure.Persistence
                 new Skill("C#"),
                 new Skill("ASPNET Core")
             };
-        }
-        public List<Project> Projects { get; set; }
-        public List<User> Users { get; set; }
-        public List<Skill> Skills { get; set; }
-        public List<ProjectComment> ProjectComments { get; set; }
+        }*/
+        #endregion
+
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<UserSkill> UserSkills { get; set; }
+        public DbSet<ProjectComment> ProjectComments { get; set; }
     }
 }
