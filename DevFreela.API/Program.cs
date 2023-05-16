@@ -1,6 +1,7 @@
 using DevFreela.Application.Services.Implementations;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<DevFreelaDbContext>();
+builder.Services.AddDbContext<DevFreelaDbContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DevFreelaCs")));
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
