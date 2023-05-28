@@ -1,3 +1,4 @@
+using DevFreela.Application.Commands.CreateProject;
 using DevFreela.Application.Services.Implementations;
 using DevFreela.Application.Services.Interfaces;
 using DevFreela.Infrastructure.Persistence;
@@ -8,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddMediatR(
+    configuration => configuration.RegisterServicesFromAssembly(
+        typeof(CreateProjectCommand).Assembly));
 
 builder.Services.AddDbContext<DevFreelaDbContext>(
     options => options.UseSqlServer(
