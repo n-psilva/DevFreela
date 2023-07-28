@@ -1,22 +1,21 @@
-﻿using Azure.Core;
+﻿using Dapper;
 using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace DevFreela.Infrastructure.Persistence.Repositories
 {
     public class ProjectRepository : IProjectRepository
     {
         private readonly DevFreelaDbContext _dbContext;
+        private readonly string _connectionString;
 
-        public ProjectRepository(DevFreelaDbContext dbContext)
+        public ProjectRepository(DevFreelaDbContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _connectionString = configuration.GetConnectionString("DevFreelaCs");
         }
 
         public async Task<List<Project>> GetAllAsync() 
@@ -31,6 +30,38 @@ namespace DevFreela.Infrastructure.Persistence.Repositories
                 .Include(p => p.Freelancer)
                 .SingleOrDefaultAsync(p => p.Id == id);
             return project;
+        }
+
+        public async Task AddAsync(Project project)
+        {
+            await _dbContext.Projects.AddAsync(project);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task StartAsync(Project project)
+        {
+
+            using (var sqlconnection = new SqlConnection(_connectionString))
+            {
+                sqlconnection.Open();
+
+                var script = "update projects set Status = @status, StartedAt = @startedat where Id = @id";
+
+                await sqlconnection.ExecuteAsync(script, new { status = project.Status, startedat = project.StartedAt, project.Id });
+            }
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task AddCommentAsync(ProjectComment projectComment)
+        {
+            await _dbContext.ProjectComments.AddAsync(projectComment);
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

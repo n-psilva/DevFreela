@@ -20,5 +20,12 @@ namespace DevFreela.Infrastructure.Persistence.Repositories
                     .FirstOrDefaultAsync(u => u.Id == id); ;
             return user;
         }
+
+        public async Task AddAsync(User user)
+        {
+            await _dbContext.Users.AddAsync(user);
+
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
