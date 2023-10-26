@@ -1,6 +1,8 @@
 ﻿using DevFreela.API.Models;
 using DevFreela.Application.Commands.CreateUser;
+using DevFreela.Application.Commands.LoginUser;
 using DevFreela.Application.Queries.GetUserById;
+using DevFreela.Application.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,10 +40,17 @@ namespace DevFreela.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = id}, command);
         }
 
-        [HttpPut("{id}/login")]
-        public IActionResult Login(int id, [FromBody] LoginModel login)
+        [HttpPut("login")]
+        public async Task<IActionResult> Login(int id, [FromBody] LoginUserCommand command)
         {
-            return NoContent(); // será alterado para retornar token JWT
+            var loginUserViewModel = await _mediator.Send(command);
+
+            if(loginUserViewModel is null) // ajustar
+            {
+                return BadRequest();
+            }
+
+            return Ok(loginUserViewModel); 
         }
     }
 }
